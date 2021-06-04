@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+        "storageAccountName": "[concat('stor', uniqueString(resourceGroup().id))]",
+        "storageApiVersion": "2021-01-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[variables('storageAccountName')]",
+            "kind": "BlobStorage",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "accessTier": "Hot"
+            }
+        }
+    ],
+    "outputs": {
+        "endpoint": {
+            "type": "string",
+            "value": "[reference(variables('storageAccountName')).primaryEndpoints.blob]"
+        },
+        "key": {
+            "type": "string",
+            "value": "[listKeys(variables('storageAccountName'), variables('storageApiVersion')).keys[0].value]"
+        }
+    }
+}
